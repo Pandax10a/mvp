@@ -51,7 +51,7 @@ CREATE TABLE `client_recipe_owned` (
   PRIMARY KEY (`id`),
   KEY `client_recipe_owned_FK` (`recipes_owned_id`),
   CONSTRAINT `client_recipe_owned_FK` FOREIGN KEY (`recipes_owned_id`) REFERENCES `recipe_bank` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,6 +87,22 @@ CREATE TABLE `ingredients` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `items`
+--
+
+DROP TABLE IF EXISTS `items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `items` (
+  `id` int(10) unsigned NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `name` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `description` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `recipe_bank`
 --
 
@@ -102,17 +118,42 @@ CREATE TABLE `recipe_bank` (
   `crafting_time_in_ms` int(10) unsigned DEFAULT NULL,
   `crafting_skills` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `needed_ingredient` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
-  `ingredient_id` int(10) unsigned NOT NULL,
   `image_url` varchar(400) COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `recipe_bank_FK` (`ingredient_id`),
-  CONSTRAINT `recipe_bank_FK` FOREIGN KEY (`ingredient_id`) REFERENCES `ingredients` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `recipe_bank_FK` (`item_output_id`),
+  CONSTRAINT `recipe_bank_FK` FOREIGN KEY (`item_output_id`) REFERENCES `items` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping routines for database 'm.v.p'
 --
+/*!50003 DROP PROCEDURE IF EXISTS `add_recipe_bank` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `add_recipe_bank`(id_input int UNSIGNED, type_input varchar(100), item_output_id_input int UNSIGNED, out_count_input int UNSIGNED,
+crafting_time_in_ms_input int UNSIGNED, crafting_skill_input varchar(100), needed_ingredient_input varchar(100), image_url_input varchar(400))
+    MODIFIES SQL DATA
+BEGIN
+	INSERT INTO recipe_bank(id, `type`, item_output_id, output_count, crafting_time_in_ms, crafting_skills, needed_ingredient, image_url, created_at)
+	VALUES
+	(id_input, type_input, item_output_id_input, output_count_input, crafting_time_in_ms_input, crafting_skill_input, needed_ingredient_input,
+	image_url_input, now());
+	SELECT ROW_COUNT();
+	COMMIT;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `client_login` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -201,4 +242,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-12  8:05:16
+-- Dump completed on 2022-11-12 13:19:06

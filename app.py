@@ -51,22 +51,30 @@ def client_inventory():
         "access_token": "276AFC0E-F2CD-8B49-9349-F8A60015193379CDF517-3757-4F10-BB05-C5ED8FC493C4"
     })
 
-    my_inventory_coin =requests.get('https://api.guildwars2.com/v2/account/wallet', params={
-    "access_token": "276AFC0E-F2CD-8B49-9349-F8A60015193379CDF517-3757-4F10-BB05-C5ED8FC493C4"})
+    # my_inventory_coin =requests.get('https://api.guildwars2.com/v2/account/wallet', params={
+    # "access_token": "276AFC0E-F2CD-8B49-9349-F8A60015193379CDF517-3757-4F10-BB05-C5ED8FC493C4"})
 
-    is_valid = a.check_endpoint_info(request.json, ['copper', 'recipes'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    # is_valid = a.check_endpoint_info(request.json, ['copper', 'recipes'])
+    # if(is_valid != None):
+    #     return make_response(json.dumps(is_valid, default=str), 400)
 
-    result = dh.run_statement('CALL client_inventory_ingredients(?,?)', [my_inventory_coin[0]['value'], 
-    myrecipes[:10]])
+    for recipe in myrecipes.json()[:10]:
+        result = dh.run_statement('CALL client_recipes(?)', [recipe])
 
     if(type(result)==list):
         return make_response(json.dumps(result, default=str), 200)
     else:
-        return make_response(json.dumps(result, default=str), 400)    
+        return make_response(json.dumps(result, default=str), 401)    
 
-    # print(my_inventory_coin.json())
+myrecipes=requests.get('https://api.guildwars2.com/v2/account/recipes', params={
+    "access_token": "276AFC0E-F2CD-8B49-9349-F8A60015193379CDF517-3757-4F10-BB05-C5ED8FC493C4"
+})
+# my10recipe = []
+# my10recipe.append(myrecipes[1])
+# for index, x in zip(range(1), myrecipes):
+#     print(index, x.decode("utf-8"))
+
+print(myrecipes.json()[:10])
 
     
 
